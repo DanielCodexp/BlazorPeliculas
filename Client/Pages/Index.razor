@@ -1,0 +1,40 @@
+﻿@page "/"
+
+
+<h1>hola @nombre.ToUpper()</h1>
+<p> Hola, @UtilidadesString.Transformar(nombre)</p>
+
+<p> vamos a sumar 2 + 2 @(2+2) </p>
+
+<button @onclick=@(() => Console.WriteLine("Me han clickeado"))>
+Presioname
+</button>
+
+<button @onclick="click" >
+    clic 
+</button>
+
+<div>
+    <h3>Película</h3>
+    <p>Título: <b>@Rapidos.Titulo</b> </p>
+    <p>Fecha Lanzamiento:<b> @Rapidos.FechaLanzamiento.ToString("dd MM yyyy")</b></p>
+</div>
+
+@code{
+    string nombre = "Daniel";
+
+    Pelicula Rapidos {get { return ObtenerPelicula(); }}
+    
+    Pelicula ObtenerPelicula(){
+        return new Pelicula{
+            Titulo = "Rapidos y Furiosos 9",
+            FechaLanzamiento = new DateTime(2023 , 05, 11)
+        };
+    }
+
+    public void click (){
+        Console.WriteLine("Me dieron click funcion");
+    }
+
+}
+

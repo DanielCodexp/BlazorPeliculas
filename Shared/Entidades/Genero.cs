@@ -11,6 +11,7 @@ public class Genero
 
 	[Required (ErrorMessage = "El Campo Nombre es requerido")]
 	public string Nombre { get; set; } = null!;
+	public List<GeneroPelicula> GenerosPelicula { get; set; } = new List<GeneroPelicula>();
 }
 }
 

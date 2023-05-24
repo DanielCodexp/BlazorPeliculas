@@ -1,0 +1,3 @@
+Comando para crear la migracion
+
+dotnet ef migrations add Inicial

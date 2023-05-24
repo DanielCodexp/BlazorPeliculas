@@ -1,14 +1,14 @@
 ﻿@page "/"
-@inject ServicioSingleton AddSingleton
+
 @inject IRepositorio repositorio
 
 <PageTitle>Blazor Películas</PageTitle>
 <div>
     <h3>Película</h3>
-    <hr>
-    <button @onclick="LimpiarPeliculas">Limpíar Peliculas</button>
+    
+    
 
-    <ListadoPeliculas @ref="listadoPeliculas" Peliculas="Peliculas"/>
+    <ListadoPeliculas Peliculas="Peliculas"/>
 </div>
       
 
@@ -21,16 +21,6 @@
             Peliculas = repositorio.ObtenerPeliculas();
         }
 
-        private void LimpiarPeliculas()
-        {
-            listadoPeliculas.LimpiarPeliculas();
-        }
-
-
-
-
-
-   
 
 }
 

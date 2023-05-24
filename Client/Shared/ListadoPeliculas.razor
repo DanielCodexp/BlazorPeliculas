@@ -1,18 +1,18 @@
 @inject IJSRuntime js
 
-    <input type="checkbox" @bind="MostrarBotones" > <span>
-        Mostrar botones
-    </span>
-  
+<div style="display: flex; flex-wrap:wrap; align-items: center;">
  <ListadoGenerico Listado="Peliculas">
     <HayRegistros Context="pelicula">
         <PeliculaIndividual Pelicula="pelicula" 
          EliminarPelicula="EliminarPelicula"
-         MostrarBotones="MostrarBotones" />
+         />
            
        
     </HayRegistros>
  </ListadoGenerico>
+</div>
+
+
 
 
 @code {
@@ -20,15 +20,8 @@
     [EditorRequired]
     public List<Pelicula>? Peliculas { get; set; }
 
-    public void LimpiarPeliculas()
-    {
-        if(Peliculas is not null)
-        {
-            Peliculas.Clear();
-        }
-    }    
-  
-    bool MostrarBotones = false;
+    
+
     private async Task EliminarPelicula(Pelicula pelicula) 
     {
         var confirmado = await js.Confirm($"¿Desea borrar la pelicula {pelicula.Titulo}?");

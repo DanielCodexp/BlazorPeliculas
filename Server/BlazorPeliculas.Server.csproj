@@ -17,4 +17,7 @@
     <ProjectReference Include="..\Client\BlazorPeliculas.Client.csproj" />
     <ProjectReference Include="..\Shared\BlazorPeliculas.Shared.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
 </Project>

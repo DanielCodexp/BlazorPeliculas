@@ -11,7 +11,7 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<ApplicationDbContext>(opciones =>
     opciones.UseSqlServer("name=DefaultConnection"));
-
+// 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

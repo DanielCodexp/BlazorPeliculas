@@ -1,3 +1,6 @@
-Comando para crear la migracion
+###########**********Comando para crear la migracion*************#######
 
-dotnet ef migrations add Inicial
+Add-Migration Inicial
+
+###############********** Crear la base de datos ***********#####
+Update-Database

@@ -1,0 +1,6 @@
+###########**********Comando para crear la migracion*************#######
+
+Add-Migration Inicial
+
+###############********** Crear la base de datos ***********#####
+Update-Database

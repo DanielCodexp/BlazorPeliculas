@@ -1,40 +1,30 @@
 ﻿@page "/"
 
+@inject IRepositorio repositorio
 
-<h1>hola @nombre.ToUpper()</h1>
-<p> Hola, @UtilidadesString.Transformar(nombre)</p>
-
-<p> vamos a sumar 2 + 2 @(2+2) </p>
-
-<button @onclick=@(() => Console.WriteLine("Me han clickeado"))>
-Presioname
-</button>
-
-<button @onclick="click" >
-    clic 
-</button>
-
+<PageTitle>Blazor Películas</PageTitle>
 <div>
-    <h3>Película</h3>
-    <p>Título: <b>@Rapidos.Titulo</b> </p>
-    <p>Fecha Lanzamiento:<b> @Rapidos.FechaLanzamiento.ToString("dd MM yyyy")</b></p>
+    <h3>En Cartelera</h3>
+    <ListadoPeliculas Peliculas="EnCartelera"/>
+</div>
+      
+<div>
+    <h3>Próximos Estrenos </h3>
+    <ListadoPeliculas Peliculas="FuturosEstrenos" />
 </div>
 
 @code{
-    string nombre = "Daniel";
+        public List<Pelicula>? FuturosEstrenos { get; set; }
+        public List<Pelicula>? EnCartelera { get; set; }
 
-    Pelicula Rapidos {get { return ObtenerPelicula(); }}
-    
-    Pelicula ObtenerPelicula(){
-        return new Pelicula{
-            Titulo = "Rapidos y Furiosos 9",
-            FechaLanzamiento = new DateTime(2023 , 05, 11)
-        };
-    }
+        protected override async Task OnInitializedAsync()
+        {
+            var respuestaHTTP = await repositorio.Get<HomePageDTO>("api/peliculas");
+            FuturosEstrenos = respuestaHTTP.Response!.ProximosEstrenos;
+            EnCartelera = respuestaHTTP.Response!.PeliculasEnCartelera; 
+        }
 
-    public void click (){
-        Console.WriteLine("Me dieron click funcion");
-    }
 
 }
+
 

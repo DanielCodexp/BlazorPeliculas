@@ -30,6 +30,7 @@ else
     }
     async void Crear()
     {
+        Console.WriteLine(Pelicula);
         var httpResponse = await repositorio.Post<Pelicula, int>("api/peliculas", Pelicula);
 
         if(httpResponse.Error)

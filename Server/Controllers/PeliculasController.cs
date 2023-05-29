@@ -124,24 +124,31 @@ namespace BlazorPeliculas.Server.Controllers
                 var poster = Convert.FromBase64String(pelicula.Poster);
                 pelicula.Poster = await almacenadorArchivos.GuardarArchivo(poster, ".jpg", contenedor);
             }
-
-            if(pelicula.PeliculasActor is not null)
-            {
-                for (int i= 0; i < pelicula.PeliculasActor.Count; i++)
-                {
-                    pelicula.PeliculasActor[i].Orden = i + 1;
-                }
-            }
+            EscribirOrdenActores(pelicula);
 
             context.Add(pelicula);
             await context.SaveChangesAsync();
             return pelicula.Id;
         }
 
+        private static void EscribirOrdenActores(Pelicula pelicula)
+        {
+            if (pelicula.PeliculasActor is not null)
+            {
+                for (int i = 0; i < pelicula.PeliculasActor.Count; i++)
+                {
+                    pelicula.PeliculasActor[i].Orden = i + 1;
+                }
+            }
+        }
+
         [HttpPut]
         public async Task<ActionResult> Put(Pelicula pelicula)
         {
-            var peliculaDB = await context.Peliculas.FirstOrDefaultAsync(x => x.Id == pelicula.Id);
+            var peliculaDB = await context.Peliculas
+                .Include(x => x.GenerosPelicula)
+                .Include(x => x.PeliculasActor)
+                .FirstOrDefaultAsync(x => x.Id == pelicula.Id);
 
             if (peliculaDB != null)
             {
@@ -156,6 +163,10 @@ namespace BlazorPeliculas.Server.Controllers
                 peliculaDB.Poster = await almacenadorArchivos.EditarArchivo(posterImagen,
                     ".jpg", contenedor, peliculaDB.Poster!);
             }
+
+            EscribirOrdenActores(peliculaDB);
+            await context.SaveChangesAsync();
+            return NoContent();
 
         }
 

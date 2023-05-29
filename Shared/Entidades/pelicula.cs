@@ -2,6 +2,8 @@ using System.ComponentModel.DataAnnotations;
 namespace BlazorPeliculas.Shared.Entidades
 {
     public class Pelicula {
+        public object peliculasActor;
+
         public int Id { get; set; }
         [Required]
         public string Titulo { get; set;} = null!;

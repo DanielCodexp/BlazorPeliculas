@@ -1,5 +1,6 @@
+@inject IRepositorio repositorio
 
-<EditForm Model="Pelicula" OnValidSubmit="OnValidSubmit">
+<EditForm Model="Pelicula" OnValidSubmit="OnDataAnnotationsValidated">
     <DataAnnotationsValidator />
     <div class="mb-3">
         <label>Título:</label>
@@ -8,33 +9,40 @@
             <ValidationMessage For="@(() => Pelicula.Titulo)" />
         </div>
     </div>
-      <div class="mb-3">
+    <div class="mb-3">
         <label>En cartelera:</label>
         <div>
             <InputCheckbox @bind-Value="@Pelicula.EnCartelera" />
             <ValidationMessage For="@(() => Pelicula.EnCartelera)" />
         </div>
     </div>
-      <div class="mb-3">
+    <div class="mb-3">
+        <label>Trailer:</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@Pelicula.Trailer" />
+            <ValidationMessage For="@(() => Pelicula.Trailer)" />
+        </div>
+    </div>
+    <div class="mb-3">
         <label>Fecha lanzamiento:</label>
         <div>
             <InputDate class="form-control" @bind-Value="@Pelicula.Lanzamiento" />
             <ValidationMessage For="@(() => Pelicula.Lanzamiento )" />
         </div>
     </div>
-        <div class="mb-3">
+    <div class="mb-3">
         <InputImg Label="Poster" ImagenSeleccionada="ImagenSeleccionada" ImagemURL="@imagemURL" />
     </div>
     <div class="mb-3 form-markdown">
         <InputMarkdown @bind-Value="@Pelicula.Resumen"
-        For=@(() => Pelicula.Resumen)
-        Label="Resumen" />
+                       For=@(() => Pelicula.Resumen)
+                       Label="Resumen" />
     </div>
     <div class="mb-3">
         <label>Géneros:</label>
         <div>
-            <SelectorMultiple NoSeleccionados="NoSeleccionados" Seleccionados="Seleccionados" >
-                
+            <SelectorMultiple NoSeleccionados="NoSeleccionados" Seleccionados="Seleccionados">
+
             </SelectorMultiple>
         </div>
     </div>
@@ -43,20 +51,19 @@
         <label>Actores:</label>
         <div>
             <SelectorMultipleTypeahed Context="Actor" SearchMethod="BuscarActores"
-            ElementosSelecionados="ActoresSeleccionados"
-            >
-<MyListTemplate>
-    @Actor.Nombre
-</MyListTemplate>
-<MyResultTemplate>
-    <img style="width: 50px;" src="@Actor.Foto" />
-    @Actor.Nombre;
-</MyResultTemplate>
+                                      ElementosSelecionados="ActoresSeleccionados">
+                <MyListTemplate>
+                    @Actor.Nombre / <input type="text" placeholder="Personaje" @bind="Actor.Personaje" />
+                </MyListTemplate>
+                <MyResultTemplate>
+                    <img style="width: 50px;" src="@Actor.Foto" />
+                    @Actor.Nombre;
+                </MyResultTemplate>
             </SelectorMultipleTypeahed>
         </div>
     </div>
 
-       <button class="btn btn-success" >Guardar Cambios</button>
+    <button class="btn btn-success">Guardar Cambios</button>
 
 </EditForm>
 
@@ -74,11 +81,11 @@
     [Parameter]
     [EditorRequired]
     public List<Genero> GenerosSeleccionados { get; set; } = new List<Genero>();
-    
+
     [Parameter]
     public List<Genero> GenerosNoSeleccionados { get; set; } = new List<Genero>();
     [Parameter]
-    public List<Actor> ActoresSeleccionados {get; set; } = new List<Actor>();
+    public List<Actor> ActoresSeleccionados { get; set; } = new List<Actor>();
 
 
     private List<SelectorMultipleModel> Seleccionados { get; set; } = new List<SelectorMultipleModel>();
@@ -98,21 +105,25 @@
 
     private void ImagenSeleccionada(string imagenBase64)
     {
-       Pelicula.Poster = imagenBase64;
+        Pelicula.Poster = imagenBase64;
         imagemURL = null;
     }
 
-  private async Task<IEnumerable<Actor>> BuscarActores(string searchText)
-{   await Task.Delay(1);
-    return new List<Actor>()
+    private async Task<IEnumerable<Actor>> BuscarActores(string searchText)
     {
-        new Actor { Id = 1, Nombre = "Vin Diesel", Foto = "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTgQM_Yxck1R7ECSXhxUGXAdD6tIF8OWz8avAWrXuB6G8X2kiu3" },
-        new Actor { Id = 2, Nombre = "Michelle Rodriguez", Foto = "https://t1.gstatic.com/licensed-image?q=tbn:ANd9GcTYtD5uMUxvU1WmPJspvN7vImHBVde6OyEakWur7S9aoRov3x0VEIfTHHh8TPNMBkHl" },
-        new Actor { Id = 3, Nombre = "Jesse Eisenberg", Foto = "https://t2.gstatic.com/licensed-image?q=tbn:ANd9GcT7Vegl_ymiVD0g6SHM1GK9N-y052HGWvbojs-whYkeSdqw4BJYMzObay_OaC1yeGVN" },
-        new Actor { Id = 4, Nombre = "Emma Stone", Foto = "https://t0.gstatic.com/licensed-image?q=tbn:ANd9GcST84u_hF1QVU7oVWz9Bi4o7FIYOLOtox0dsm62pu2fOqFAUsDgyONAdj0qwWpE4bTF" },
-        new Actor { Id = 5, Nombre = "Rayo McQueen", Foto = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Lightning_McQueen_%2834615708803%29.jpg/1200px-Lightning_McQueen_%2834615708803%29.jpg" },
-        new Actor { Id = 6, Nombre = "Tow Mate Mater", Foto = "https://upload.wikimedia.org/wikipedia/commons/1/11/Tow_Mater_%28265156851%29.jpg" }
-    };
-}
+        var respuestaHTTP = await repositorio.Get<List<Actor>>($"api/actores/buscar/{searchText}");
+        return respuestaHTTP!.Response!;
+    }
+
+    private async Task OnDataAnnotationsValidated()
+    {
+        Pelicula.GenerosPelicula = Seleccionados
+        .Select(x => new GeneroPelicula { GeneroId = int.Parse(x.Llave) }).ToList();
+
+        Pelicula.PeliculasActor = ActoresSeleccionados
+        .Select(x => new PeliculaActor { ActorId = x.Id, Personaje = x.Personaje }).ToList();
+
+        await OnValidSubmit.InvokeAsync();
+    }
 
 }

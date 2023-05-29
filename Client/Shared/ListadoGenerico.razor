@@ -1,31 +1,45 @@
 @typeparam Titem
 
-@if (Listado is null){
-    @if (Cargando is null) {
-           <div class="d-flex justify-content-center">
- <img  src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif?20151024034921" />
-  </div>
-    } else {
-          @Cargando
+@if (Listado is null)
+{
+    @if (Cargando is null)
+    {
+        <div class="d-flex justify-content-center">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif?20151024034921" />
+        </div>
+    }
+    else
+    {
+        @Cargando
     }
 
-   
-} 
-else if (Listado.Count == 0){
-    @if(NoHayRegistros is null) 
+
+}
+else if (Listado.Count == 0)
+{
+    @if (NoHayRegistros is null)
     {
-    <p>No hay películas para mostrar.</p>
+        <p>No hay películas para mostrar.</p>
     }
-    else {
+    else
+    {
         @NoHayRegistros
     }
 }
 else
 {
-   @foreach (var elemento in Listado)
-   {
-    @HayRegistros(elemento)
-   }
+    if (HayRegistros is not null)
+    {
+        @foreach (var elemento in Listado)
+        {
+            @HayRegistros(elemento)
+        }
+    }
+    else
+    {
+        @HayRegistrosCompleto
+    }
+
 }
 @code {
     [Parameter]
@@ -34,8 +48,9 @@ else
     public RenderFragment NoHayRegistros { get; set; } = null!;
     [Parameter]
     public RenderFragment<Titem> HayRegistros { get; set; } = null!;
-
+    [Parameter]
+    public RenderFragment HayRegistrosCompleto { get; set; } = null!;
     [Parameter]
     [EditorRequired]
-    public List<Titem> Listado {get; set; } =null!;
+    public List<Titem> Listado { get; set; } = null!;
 }

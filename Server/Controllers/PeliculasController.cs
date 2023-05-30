@@ -165,7 +165,14 @@ namespace BlazorPeliculas.Server.Controllers
             }
 
             EscribirOrdenActores(peliculaDB!);
-            await context.SaveChangesAsync();
+            try
+            {
+   await context.SaveChangesAsync();
+            }
+         catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
             return NoContent();
 
         }

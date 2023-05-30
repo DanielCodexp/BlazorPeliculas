@@ -76,7 +76,7 @@ namespace BlazorPeliculas.Server.Controllers
             {
                 Nombre = pa.Actor!.Nombre,
                 Foto = pa.Actor.Foto,
-                Personaje = pa.Actor.Personaje,
+                Personaje = pa.Personaje,
                 Id = pa.ActorId
             }).ToList();
 
@@ -160,12 +160,19 @@ namespace BlazorPeliculas.Server.Controllers
             if (!string.IsNullOrWhiteSpace(pelicula.Poster))
             {
                 var posterImagen = Convert.FromBase64String(pelicula.Poster);
-                peliculaDB.Poster = await almacenadorArchivos.EditarArchivo(posterImagen,
+                peliculaDB!.Poster = await almacenadorArchivos.EditarArchivo(posterImagen,
                     ".jpg", contenedor, peliculaDB.Poster!);
             }
 
-            EscribirOrdenActores(peliculaDB);
-            await context.SaveChangesAsync();
+            EscribirOrdenActores(peliculaDB!);
+            try
+            {
+   await context.SaveChangesAsync();
+            }
+         catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
             return NoContent();
 
         }

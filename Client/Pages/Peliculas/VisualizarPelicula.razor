@@ -1,4 +1,4 @@
-@page "/pelicula/{PeliculaId:int}"
+ @page "/pelicula/{PeliculaId:int}"
 @page "/pelicula/{PeliculaId:int}/{NombrePelicula}"
 @inject IRepositorio repositorio
 @inject SweetAlertService swal
@@ -12,16 +12,16 @@ else
     <h2>
         @modelo.Pelicula.Titulo (@modelo.Pelicula.Lanzamiento!.Value.ToString("yyyy"))
     </h2>
-
     foreach (var genero in modelo.Generos)
     {
         <a class="me-2 badge bg-primary rounded-pill text-decoration-none"
-           href="peliculas/buscar?generoid=@genero.Id">@genero.Nombre</a>
+        href="peliculas/buscar?generoid=@genero.Id">@genero.Nombre</a>
     }
     <span>
         | @modelo.Pelicula.Lanzamiento!.Value.ToString("dd MMM yyyy")
         | promedio: @modelo.PromedioVotos.ToString("0.#")/5
-        | Tu voto: @modelo.VotoUsuarios.ToString()
+        | Tu voto: <Rating MaximoPuntaje="5" PuntajeSeleccionado="modelo.VotoUsuarios" 
+        OnRating="OnRating" ></Rating>
     </span>
 
     <div class="d-flex mt-2">
@@ -83,5 +83,24 @@ else
         }
 
     }
+
+    private async Task OnRating(int votoSeleccionado)
+    {
+        modelo!.VotoUsuarios = votoSeleccionado;
+        var votoPeliculaDTO = new VotoPeliculaDTO() { PeliculaId = PeliculaId, Voto = votoSeleccionado };
+        var respuestaHTTP = await repositorio.Post("api/votos", votoPeliculaDTO);
+
+        if (respuestaHTTP.Error)
+        {
+            var mensajeError = await respuestaHTTP.ObtenerMensajeError();
+            await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            await swal.FireAsync("Exitoso", "Su voto ha sido recibido", SweetAlertIcon.Success);
+        }
+
+    }
+
 }
 

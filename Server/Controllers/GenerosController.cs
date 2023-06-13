@@ -1,10 +1,13 @@
 ﻿using BlazorPeliculas.Shared.Entidades;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlazorPeliculas.Server.Controllers
 {
     [Route("api/generos")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
     [ApiController]
     public class GenerosController : ControllerBase
     {
@@ -16,6 +19,7 @@ namespace BlazorPeliculas.Server.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Genero>>> Get()
         {
             return await context.Generos.ToListAsync();

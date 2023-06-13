@@ -3,6 +3,8 @@ using BlazorPeliculas.Server.Helpers;
 using BlazorPeliculas.Server.Migrations;
 using BlazorPeliculas.Shared.DTOs;
 using BlazorPeliculas.Shared.Entidades;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +12,7 @@ namespace BlazorPeliculas.Server.Controllers
 {
     [ApiController]
     [Route("api/actores")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
     public class ActoresController: ControllerBase
     {
         private readonly ApplicationDbContext context;

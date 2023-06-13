@@ -9,8 +9,16 @@ namespace BlazorPeliculas.Client.Auth
         {
          
             var anonimo = new ClaimsIdentity();
-            var usuarioDaniel = new ClaimsIdentity(authenticationType: "prueba");
-            return await Task.FromResult(new AuthenticationState(new ClaimsPrincipal(anonimo)));
+            var usuarioDaniel = new ClaimsIdentity(
+                new List<Claim>
+                {
+                    new Claim("llave1", "valor1"),
+                    new Claim("edad", "999"),
+                    new Claim(ClaimTypes.Name, "Daniel"),
+                    new Claim(ClaimTypes.Role, "admin")
+                },
+                authenticationType: "prueba");
+            return await Task.FromResult(new AuthenticationState(new ClaimsPrincipal(usuarioDaniel)));
         }
     }
 }

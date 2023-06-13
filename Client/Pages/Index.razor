@@ -3,19 +3,6 @@
 @inject IRepositorio repositorio
 
 <PageTitle>Blazor Películas</PageTitle>
-
-<AuthorizeView>
-    <Authorized>
-        <p>Estás authenticado</p>
-    </Authorized>
-   
-    <NotAuthorized>
-        <p>No estás autorizado</p>
-    </NotAuthorized>
-
-</AuthorizeView>
-
-
 <div>
     <h3>En Cartelera</h3>
     <ListadoPeliculas Peliculas="EnCartelera"/>
@@ -27,14 +14,24 @@
 </div>
 
 @code{
-        public List<Pelicula>? FuturosEstrenos { get; set; }
-        public List<Pelicula>? EnCartelera { get; set; }
+    public List<Pelicula>? FuturosEstrenos { get; set; }
+    public List<Pelicula>? EnCartelera { get; set; }
 
-        protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
+    {
+        var respuestaHTTP = await repositorio.Get<HomePageDTO>("api/peliculas");
+
+        if (respuestaHTTP.HttpResponseMessage.IsSuccessStatusCode)
         {
-            var respuestaHTTP = await repositorio.Get<HomePageDTO>("api/peliculas");
             FuturosEstrenos = respuestaHTTP.Response!.ProximosEstrenos;
             EnCartelera = respuestaHTTP.Response!.PeliculasEnCartelera; 
+        }
+        else
+        {
+            Console.WriteLine(respuestaHTTP.HttpResponseMessage.StatusCode);
+        }
+
+           
         }
 
 

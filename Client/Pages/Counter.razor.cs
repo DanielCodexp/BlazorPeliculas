@@ -1,5 +1,6 @@
 using BlazorPeliculas.Client.Helpers;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 
 namespace BlazorPeliculas.Client.Pages
@@ -8,15 +9,29 @@ namespace BlazorPeliculas.Client.Pages
     {
         private int currentCount = 0;
 
-        private void IncrementCount()
+        [CascadingParameter]
+        private Task<AuthenticationState>
+            authenticationStateTask { get; set; } = null!;
+        private async void IncrementCount()
         {
 
             var arreglo = new double[] { 1, 2, 3, 4, 5 };
-            
-            currentCount++;
-            
-     
-          
+
+            var authenticationState = await authenticationStateTask;
+            var usuarioEstaAutenticado = authenticationState.User.Identity!.IsAuthenticated;
+
+            if (usuarioEstaAutenticado)
+            {
+                currentCount += 1;
+            }
+            else
+            {
+                
+                currentCount -= 1;  
+            }
+
+
+
         }
 
         

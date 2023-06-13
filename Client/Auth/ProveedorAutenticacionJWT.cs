@@ -47,8 +47,16 @@ namespace BlazorPeliculas.Client.Auth
 
             if (DateTime.TryParse(tiempoExpiracionObject.ToString(), out tiempoExpiracion))
             {
+                if (TokenExpirado(tiempoExpiracion))
+                {
                 await Limpiar();
                 return Anonimo;
+                }
+                if(DebeRenovarToken(tiempoExpiracion))
+                {
+                    token = await RenovarToken(token.ToString()!);
+                }
+               
             }
 
             return ConstruirAuthenticationState(token.ToString()!);
@@ -64,12 +72,41 @@ namespace BlazorPeliculas.Client.Auth
             return tiempoExpiracion.Subtract(DateTime.UtcNow) < TimeSpan.FromMinutes(5);
         }
 
+        public async Task ManejarRenocacionToken()
+        {
+            var tiempoExpiracionObject = await js.ObtenerDeLocalStorage(EXPIRATIONTOKENKEY);
+            DateTime tiempoExpiracion;
+            if (DateTime.TryParse(tiempoExpiracionObject.ToString(),out tiempoExpiracion))
+            {
+                if (TokenExpirado(tiempoExpiracion))
+                {
+                    await Logout();
+                }
+                if (DebeRenovarToken(tiempoExpiracion)) 
+                {
+                    var token = await js.ObtenerDeLocalStorage(TOKENKEY);
+                    var nuevoToken = await RenovarToken(token.ToString()!);
+                    var authState = ConstruirAuthenticationState(nuevoToken);
+                    NotifyAuthenticationStateChanged(Task.FromResult(authState));
+                }
+         
+             }
+        }
+
         private async Task<string> RenovarToken(string token)
         {
             Console.WriteLine("Renovando el token...");
             httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("bearer", token);
+
             var nuevoTokenResponse = await repositorio.Get<UserTokenDTO>("api/cuentas/RenovarToken");
+            var nuevoToken = nuevoTokenResponse.Response!;
+
+            await js.GuardarEnLocalStorage(TOKENKEY, nuevoToken.Token);
+            await js.GuardarEnLocalStorage(EXPIRATIONTOKENKEY, nuevoToken.Expiration.ToString());
+
+            return nuevoToken.Token;
+
         }
 
         private AuthenticationState ConstruirAuthenticationState(string token)

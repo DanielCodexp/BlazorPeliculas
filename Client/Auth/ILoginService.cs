@@ -6,5 +6,6 @@ namespace BlazorPeliculas.Client.Auth
     {
         Task Login(UserTokenDTO tokenDTO);
         Task Logout();
+        Task ManejarRenocacionToken();
     }
 }
